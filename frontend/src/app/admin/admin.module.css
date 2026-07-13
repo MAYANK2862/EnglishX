@@ -1,0 +1,211 @@
+.page {
+  padding: var(--space-8) 0 var(--space-16);
+}
+
+.header {
+  margin-bottom: var(--space-8);
+}
+
+.header h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-1);
+}
+
+/* ─── Stats ─── */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+.statCard {
+  padding: var(--space-6);
+  text-align: center;
+}
+
+.statNum {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: var(--space-2);
+}
+
+.statLabel {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ─── Tabs ─── */
+.tabs {
+  display: flex;
+  gap: var(--space-1);
+  margin-bottom: var(--space-6);
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: var(--space-1);
+}
+
+.tab {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tab:hover {
+  color: var(--text-secondary);
+  background: var(--bg-glass);
+}
+
+.tabActive {
+  color: var(--primary-400) !important;
+  background: rgba(99,102,241,0.1) !important;
+  border-bottom: 2px solid var(--primary-500);
+}
+
+/* ─── Forms ─── */
+.formError {
+  padding: var(--space-3) var(--space-4);
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.2);
+  border-radius: var(--radius-md);
+  color: var(--danger-400);
+  font-size: 0.875rem;
+  margin-bottom: var(--space-4);
+}
+
+.formSuccess {
+  padding: var(--space-3) var(--space-4);
+  background: rgba(16,185,129,0.1);
+  border: 1px solid rgba(16,185,129,0.2);
+  border-radius: var(--radius-md);
+  color: var(--accent-400);
+  font-size: 0.875rem;
+  margin-bottom: var(--space-4);
+}
+
+.tabContent {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.inlineForm {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-end;
+  margin-bottom: var(--space-6);
+  padding: var(--space-6);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+}
+
+.inlineForm .input-group { flex: 1; }
+
+/* ─── Table ─── */
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table th {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.table td {
+  padding: var(--space-3) var(--space-4);
+  font-size: 0.875rem;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+}
+
+.table tr:hover td {
+  background: var(--bg-glass);
+}
+
+.studentName {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.studentAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  color: white;
+  flex-shrink: 0;
+}
+
+.studentEmail {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.emptyTable {
+  text-align: center;
+  padding: var(--space-10);
+  color: var(--text-secondary);
+}
+
+/* ─── Batch / Invite Lists ─── */
+.batchList, .inviteList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.batchItem, .inviteItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+}
+
+.batchName {
+  font-weight: 700;
+}
+
+/* ─── Skeleton ─── */
+.skeletons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+}
+
+.skeletonCard {
+  height: 120px;
+}
+
+@media (max-width: 768px) {
+  .statsGrid { grid-template-columns: repeat(2, 1fr); }
+  .inlineForm { flex-direction: column; }
+}

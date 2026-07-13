@@ -1,0 +1,653 @@
+--- Page 1 ---
+
+P R O D U C T   R E Q U I R E M E N T S   D O C U M E N T
+Voice AI English Speaking
+Coach
+for Zenith School of AI — Student Project Build Series
+Version 1.0  |  July 2026
+Author: Anoop
+For Students of Programming Pathshala  |  Project Build Series
+
+--- Page 2 ---
+
+PRD: Voice AI English Speaking Coach
+v1.0 | July 2026
+Page 2
+1. Executive Summary
+Zenith School of AI runs a communication course for learners whose native language is Hindi. Most of
+them can read and understand English well, but freeze when they have to speak it — there is simply
+no safe, judgement-free place to practise. Group classes give each learner a few minutes of speaking
+time at best, and feedback on pronunciation, vocabulary, and grammar is generic rather than
+personal.
+This project is a voice-first AI English speaking coach. A learner opens the app and has a spoken
+conversation with an AI partner — free talk, role-plays (job interview, self-introduction, ordering at a
+restaurant), or picture description. After every session the app returns structured feedback on three
+dimensions: pronunciation (mispronounced words, pace, clarity), vocabulary (range, repetition,
+better word choices), and grammar (errors with corrections and the underlying rule). Performance
+rolls up into a defined competency level (Levels 1–6, mapped to CEFR A1–C2) per dimension.
+The product has two sides. The learner side is the practice app. The admin side is for Zenith's
+course instructors: they invite students by email, organise them into batches, and watch a dashboard
+of each student's competency levels, practice frequency, and improvement over time. Technically, the
+build follows the mandated stack: two Dockerised microservices (Express.js + FastAPI with
+LangGraph), a Next.js frontend, PostgreSQL, custom JWT auth, AWS SES, EC2 deployment with
+NGINX and HTTPS, CI/CD, and OpenTelemetry. Section 9 maps every requirement to a concrete
+use case.
+2. Problem Statement
+2.1 Target Users
+Learners: Hindi-native students and early professionals (18–30) enrolled in Zenith School of AI's
+communication course. They understand English but lack speaking practice and confidence; many
+have never received specific feedback on their spoken English.
+Admins/Instructors: Zenith's communication coaches who need to onboard batches of students,
+ensure they practise regularly, and see objective competency data instead of impressions from
+occasional class interactions.
+2.2 Pain Points
+•
+No speaking practice: Learners consume grammar lessons and videos but almost never speak
+English aloud — the one skill interviews and workplaces actually test.
+•
+Fear of judgement: Practising with peers or teachers is intimidating; mistakes feel public. An AI
+partner removes the social cost of errors.
+•
+Generic feedback: "Work on your fluency" is not actionable. Learners need the exact
+mispronounced words, the exact grammatical errors, and the corrections.
+•
+No measure of progress: Without defined levels, learners cannot tell whether a month of effort
+moved them anywhere.
+
+--- Page 3 ---
+
+PRD: Voice AI English Speaking Coach
+v1.0 | July 2026
+Page 3
+•
+Instructors are blind: Coaches have no visibility into who is practising, who is stuck, and which
+errors are common across a batch.
+3. Product Vision
+"A patient English-speaking partner in your pocket — one that never judges, hears every sentence
+you say, tells you exactly what to fix, and shows your teacher how far you've come."
+The product combines three capabilities: conversation practice (voice-first AI partner with
+scenarios), diagnostic feedback (pronunciation, vocabulary, grammar with specific corrections), and
+competency tracking (levelled scoring visible to both learner and instructor).
+4. Suggested Product Names
+Name
+Rationale
+BolBetter
+"Bol" (speak, in Hindi) + Better — speaks directly to the audience
+FluentWings
+Fluency that helps your career take off
+SpeakSure
+Speak with confidence and certainty
+VaaniAI
+"Vaani" (voice/speech in Hindi) + AI — memorable for the target user
+TalkTrack
+Talking practice with tracked progress
+Recommendation: BolBetter or VaaniAI — both bridge Hindi and English exactly the way the product does.
+5. User Personas
+5.1 Persona A — "The Hesitant Graduate"
+•
+Name: Rohit, 22, B.Com graduate from Kanpur, enrolled in Zenith's communication course
+•
+Background: Studied in Hindi-medium school; reads English fine, thinks in Hindi
+•
+Goal: Clear job interviews without freezing when asked "tell me about yourself"
+•
+Frustration: Knows the grammar rules on paper but makes tense and article errors while
+speaking; nobody has ever told him which sounds he mispronounces
+•
+Behaviour: Will practise daily if it's private, short (10–15 min), and shows visible progress
+5.2 Persona B — "The Batch Coach" (Admin)
+•
+Name: Meera, 30, communication instructor at Zenith School of AI
+•
+Responsibility: 3 batches of 40 students each; expected to improve spoken-English outcomes
+within the course duration
+•
+Goal: Get every student practising 4+ times a week and identify who needs live intervention
+
+--- Page 4 ---
+
+PRD: Voice AI English Speaking Coach
+v1.0 | July 2026
+Page 4
+•
+Frustration: Can listen to at most 5–6 students per class; the other 35 are a black box. Needs
+batch-level error patterns (e.g., "most of batch B struggles with v/w sounds")
+6. Core Features
+6.1 Voice Conversation Practice
+•
+Free talk mode: open conversation with the AI partner on everyday topics; the agent keeps the
+conversation going with follow-up questions matched to the learner's level
+•
+Scenario role-plays: guided situations — self-introduction, HR interview, ordering food, phone
+call to customer support, describing your project
+•
+Picture/prompt description: the learner speaks for 60–90 seconds on a shown image or topic
+card
+•
+Voice-first UX: push-to-talk or continuous mode; the AI replies with voice (TTS) and an
+on-screen transcript; the learner can replay their own audio
+•
+Level-aware partner: the agent adapts its own vocabulary and speaking pace to the learner's
+current level, stretching them slightly beyond it
+6.2 Three-Dimensional Feedback Engine
+After every session (and inline, gently, during it), the learner receives structured feedback:
+Dimension
+What Is Analysed
+Example Feedback
+Pronunciation
+Mispronounced words, problem
+phonemes (v/w, th), pace, filler
+sounds
+"You said 'wery' for 'very' 4 times — tap to hear
+the correct sound and record it back"
+Vocabulary
+Range and variety, repetition,
+register, better word choices
+"You used 'good' 9 times. Try: 'helpful', 'effective',
+'impressive' — here's each in a sentence"
+Grammar
+Tense consistency, articles,
+subject–verb agreement, sentence
+structure
+"You said 'I am working there since 2022' → 'I
+have been working there since 2022' (present
+perfect continuous for ongoing duration)"
+•
+Every correction is stored, so recurring errors become a personal "fix list" the agent deliberately
+re-tests in later sessions
+•
+Feedback is encouraging by design — one strength is always highlighted alongside corrections
+6.3 Competency Levels & Scoring
+•
+Defined 6-level scale (Level 1–6, mapped to CEFR A1–C2) per dimension — a learner can be
+Level 4 in vocabulary but Level 2 in pronunciation
+•
+Each session produces dimension scores (0–100) from the analysis pipeline; levels move on
+rolling averages, so one bad day doesn't drop a level
+•
+A short placement conversation at onboarding sets the starting level
+
+--- Page 5 ---
+
+PRD: Voice AI English Speaking Coach
+v1.0 | July 2026
+Page 5
+•
+An overall speaking level combines the three dimensions with fluency signals (words per minute,
+pause patterns, response latency)
+6.4 Learner Dashboard & Practice Habit
+•
+Level cards per dimension with trend lines across sessions
+•
+Personal fix list: top recurring errors with one-tap re-practice drills
+•
+Streaks and weekly practice goals; daily practice reminder email
+•
+Session history with transcripts, replayable audio, and feedback reports
+6.5 Admin / Instructor Side
+•
+Invite-based onboarding: admins invite students by email (individually or CSV bulk upload);
+students join via a secure invite link
+•
+Batch management: group students into batches/cohorts mapped to Zenith course batches
+•
+Competency dashboard: per-student levels across the three dimensions, practice frequency,
+minutes practised, and trend
+•
+Batch analytics: common error patterns across a batch ("62% struggle with articles"), level
+distribution, and inactive-student alerts
+•
+Weekly digest email: automatic batch summary to the instructor via SES
+7. User Journey
+Phase
+User Action
+System Response
+1
+Admin (Meera) uploads a CSV of 40
+students
+SES sends each student a branded invite email with a
+secure link
+2
+Rohit accepts the invite, creates a
+password
+Account created under batch "Comm-B7"; JWT issued
+3
+Takes the 5-minute placement
+conversation
+Speech pipeline scores it: Pronunciation L2,
+Vocabulary L3, Grammar L2
+4
+Starts a role-play: "HR interview
+self-introduction"
+AI partner converses by voice, adapting pace to Level
+2–3
+5
+Says "I am working in my college project
+since January"
+Gentle inline nudge; error logged for the session report
+6
+Finishes the 12-minute session
+Feedback report: 3 pronunciation flags, vocabulary
+suggestions, 5 grammar corrections with rules
+7
+Practises 5 days in a row
+Streak recognised; recurring v/w error re-tested in a
+drill and cleared
+
+--- Page 6 ---
+
+PRD: Voice AI English Speaking Coach
+v1.0 | July 2026
+Page 6
+Phase
+User Action
+System Response
+8
+Rohit checks his dashboard after 3 weeks
+Pronunciation has moved L2 → L3; trend lines show
+the climb
+9
+Meera opens the batch dashboard
+Sees level distribution, spots 6 inactive students, sends
+a nudge from the app
+10
+End of course module
+Weekly digest shows batch average moved from L2.4
+to L3.1; exportable report
+8. Competitive Landscape
+Capability
+This Product
+Duolingo
+ELSA Speak
+Cambly
+Open voice conversation with AI
+Yes
+Limited
+(scripted)
+Limited
+Human tutors
+Pronunciation + vocabulary + grammar
+in one report
+Yes
+No
+Pronunciation
+-focused
+Tutor-depend
+ent
+Defined competency levels per
+dimension
+Yes
+Gamified XP
+only
+Partial
+No
+Admin/instructor cohort dashboard
+Yes
+Schools
+product
+(limited)
+No
+No
+Invite-based institutional onboarding
+Yes
+No
+No
+No
+Built for Hindi-native learners
+Yes
+Generic
+Generic
+Generic
+Consumer apps optimise for gamified self-study. None combine open voice conversation,
+three-dimensional feedback, and an instructor-facing competency view for an institute setting —
+which is exactly Zenith's need and this project's core loop.
+9. Technical Requirements & Use Cases in This Project
+The following requirements are mandatory for assessment (except the two marked optional). The
+right-hand column shows where each requirement naturally fits in this product — use these as the
+default; deviations are fine if justified in your README.
+#
+Requirement
+Suggested Use Case in This Project
+1
+GitHub Actions for CI/CD
+On push to main: lint + tests for ms1, ms2, and frontend; build and push
+Docker images; SSH-deploy to EC2 and restart containers. PR workflow
+blocks merge on failures. Keep model/API keys in GitHub Secrets.
+
+--- Page 7 ---
+
+PRD: Voice AI English Speaking Coach
+v1.0 | July 2026
+Page 7
+#
+Requirement
+Suggested Use Case in This Project
+2
+Single GitHub monorepo
+(ms1, ms2, frontend)
+/ms1-core-api (Express), /ms2-speech-agent (FastAPI), /frontend (Next.js),
+/infra (NGINX, compose, deploy scripts). Path-filtered workflows rebuild
+only changed services.
+3
+AWS SES for email
+The invite system is the flagship use: admin invites students via SES with
+secure tokenised links. Also: signup verification, daily practice reminders,
+weekly instructor batch digests, and inactivity nudges.
+4
+React or Next.js frontend
+Next.js app with two areas: learner (voice session UI with recorder, live
+transcript, feedback reports, level dashboard) and admin (invites, batches,
+competency dashboards). Use the MediaRecorder API for audio capture.
+5
+At least one PostgreSQL
+database (RDS or external)
+Postgres stores users, batches, invites, sessions, transcripts, error
+records, dimension scores, and level history. JSONB suits per-session
+feedback reports; audio files go to S3/disk with URLs in Postgres.
+6
+Docker for both
+microservices
+Dockerfile per service; ms2's image includes speech dependencies (e.g.,
+faster-whisper or cloud STT SDK). docker-compose boots ms1, ms2,
+Postgres, NGINX locally in one command.
+7
+Custom JWT auth (Google
+OAuth a plus)
+Email/password with bcrypt, access + refresh tokens, and role claims in
+the JWT (learner vs admin) enforced by middleware on both services.
+Invite-link signup pre-binds the student to a batch. Google sign-in as the
+bonus path.
+8
+Domain integration
+everywhere (frontend,
+backend, mail)
+e.g., bolbetter.in for the app, api.bolbetter.in for ms1, speech.bolbetter.in
+(or an internal route) for ms2; SES sends invites and digests from
+coach@bolbetter.in with SPF/DKIM verified.
+9
+LangGraph / LangChain in
+at least one microservice (a
+dedicated agentic service
+is good)
+ms2 is the dedicated agent service. LangGraph graphs for: (a) the
+conversation partner (state machine holding scenario, learner level, and
+conversation memory), (b) the feedback pipeline (transcript → parallel
+pronunciation/vocabulary/grammar analysis nodes → aggregated report),
+and (c) the placement grader that sets starting levels.
+1
+0
+Two microservices — one
+Express.js, one FastAPI
+ms1 (Express.js): auth/roles, invites, batches, session records,
+dashboards, SES dispatch. ms2 (FastAPI): audio ingestion,
+speech-to-text, LangGraph conversation + feedback graphs, scoring.
+FastAPI suits the Python speech/ML ecosystem; ms1 calls ms2 over
+internal HTTP.
+1
+1
+AWS EC2 deployment with
+HTTPS via certbot
+All containers on one EC2 instance via docker-compose; certbot issues
+Let's Encrypt certs with auto-renew. HTTPS is non-negotiable here —
+browsers block microphone access on insecure origins.
+1
+2
+NGINX as reverse proxy
+TLS termination and routing: / → Next.js, /api → ms1, /speech → ms2.
+Raise client_max_body_size and timeouts for audio uploads; enable gzip
+for JSON reports.
+
+--- Page 8 ---
+
+PRD: Voice AI English Speaking Coach
+v1.0 | July 2026
+Page 8
+#
+Requirement
+Suggested Use Case in This Project
+1
+3
+Observability with
+OpenTelemetry (basic
+setup mandatory)
+Trace the full voice loop: upload → STT → analysis nodes → response,
+propagating context across the ms1 → ms2 hop. Record STT latency, LLM
+latency, and audio duration as span attributes — voice UX lives or dies on
+this latency, so the traces are genuinely useful. Export to
+Jaeger/SigNoz/Grafana.
+1
+4
+Modular, clean, readable
+code without cluttered
+comments
+Layered structure per service (routes → services → repositories),
+Pydantic/Zod schemas for every payload, the scoring formula isolated in
+one module. Comments only where the "why" isn't obvious — e.g.,
+level-transition thresholds.
+1
+5
+(Optional) API
+documentation
+FastAPI's built-in OpenAPI docs for ms2; swagger-jsdoc or a Postman
+collection for ms1. Document the internal ms1 ↔ ms2 contract too.
+1
+6
+(Optional) Rate limiting
+Cap expensive endpoints: audio analysis per user per hour (STT + LLM
+cost), login attempts, and invite sends per admin per day. A global NGINX
+limit protects the whole stack.
+10. System Architecture (High Level)
+10.1 Components
+•
+Frontend (Next.js): learner voice UI (recorder, transcript, TTS playback, reports) and admin
+dashboards. Talks only to ms1's public API; audio uploads may go directly to ms2 via the NGINX
+route with the same JWT.
+•
+ms1 — Core API (Express.js): auth with role claims, invites and batches, session records, level
+history, dashboard aggregation, SES email dispatch. Owns the Postgres schema.
+•
+ms2 — Speech & Agent Service (FastAPI + LangGraph): speech-to-text (faster-whisper local
+or a cloud STT API), the conversation-partner graph, the three-dimension feedback pipeline,
+scoring, and TTS for the AI's voice replies.
+•
+PostgreSQL: single source of truth; audio stored on S3 or EC2 disk with references in the DB.
+•
+NGINX: TLS termination, routing, large-body handling for audio.
+•
+OpenTelemetry → Jaeger (or hosted): traces across the voice loop.
+10.2 Key Flows
+•
+Invite flow: admin (frontend) → ms1 creates tokenised invites → SES emails → student signs
+up via link → bound to batch.
+•
+Practice flow: learner audio → ms2 STT → conversation graph replies (text + TTS) → turns
+accumulate → session end triggers the feedback pipeline → scores persist via ms1 →
+dashboards update.
+•
+Digest flow: nightly job in ms1 aggregates batch stats → SES weekly digest to instructors.
+
+--- Page 9 ---
+
+PRD: Voice AI English Speaking Coach
+v1.0 | July 2026
+Page 9
+11. MVP Scope — 2 Weeks
+The MVP must prove the core loop end-to-end on live infrastructure: admin invites a student →
+student has a voice conversation → receives three-dimension feedback → levels update →
+admin sees it on the dashboard. Cut breadth aggressively, but do not cut the mandatory technical
+requirements — deployment, auth with roles, both microservices, LangGraph, SES, and observability
+are all in the 2-week scope.
+11.1 In Scope
+•
+Two conversation modes only: free talk + one role-play (self-introduction / HR interview)
+•
+Invite-based signup (single email invites; CSV bulk can wait) + JWT auth with learner/admin
+roles
+•
+Voice session: record → STT → AI partner reply (text on screen; TTS if time permits) for 5–10
+turn conversations
+•
+Post-session feedback report covering all three dimensions, generated by the LangGraph
+pipeline (pronunciation via word-level STT confidence + common Hindi-speaker patterns is
+acceptable at MVP)
+•
+Simple placement conversation and Level 1–6 scoring per dimension with rolling averages
+•
+Learner dashboard (level cards + session history) and admin dashboard (student list with levels
+and last-practised date)
+•
+Daily practice reminder email via SES
+•
+Full mandatory infra: monorepo, Docker, CI/CD, EC2 + NGINX + certbot + domain, basic OTel
+traces on the voice loop
+11.2 Out of Scope (Post-MVP)
+CSV bulk invites and multi-batch management. Phoneme-level pronunciation scoring and
+record-back drills. Inline (mid-conversation) corrections. Batch-level error analytics and weekly
+instructor digests. Streaks and gamification. Additional role-play scenarios and picture description.
+Google OAuth. Audio replay library. Fix-list re-practice drills.
+11.3 Two-Week Plan
+Days
+Milestone
+Proof It Works
+1–2
+Monorepo scaffold, Docker + compose (ms1, ms2,
+Postgres, NGINX), schema v1, CI pipeline; pick and
+validate the STT path (faster-whisper vs cloud API)
+with a spike
+Stack boots with one command; a
+hard-coded audio file returns a transcript
+3–4
+JWT auth with roles, admin invite → SES email →
+tokenised signup; deploy skeleton to EC2 with HTTPS
+and domain early (mic needs HTTPS)
+Real invite email lands; student signs up
+on the live domain and mic permission
+works
+
+--- Page 10 ---
+
+PRD: Voice AI English Speaking Coach
+v1.0 | July 2026
+Page 10
+Days
+Milestone
+Proof It Works
+5–6
+Voice session pipeline: browser recorder → ms2 STT
+→ LangGraph conversation partner replies; turns
+persisted
+A 6-turn spoken conversation works
+end-to-end on the live site
+7–8
+Feedback pipeline graph: transcript → grammar +
+vocabulary + pronunciation nodes → aggregated
+session report
+Session ends with a specific,
+correction-level feedback report
+9–10
+Placement conversation + Level 1–6 scoring with
+rolling averages; learner dashboard with level cards
+and history
+New user gets placed; levels visibly move
+after sessions
+11–12
+Admin dashboard (students, levels, last practised);
+daily reminder email; OTel traces across upload →
+STT → LLM
+Admin sees live student data; one trace
+spans the full voice loop
+13–14
+Hardening: error states (mic denied, silence, long
+audio), latency tuning, final deploy, README + demo
+video; optional API docs / rate limiting
+End-to-end demo: invite → conversation
+→ feedback → level change → admin
+view
+Deploy to EC2 by Day 4, not Day 13 — microphone capture only works over HTTPS, so nothing voice-related is
+truly tested until the app is live on the domain.
+12. Learning Outcomes
+•
+Building a voice pipeline end-to-end: browser audio capture, streaming/uploading,
+speech-to-text, and TTS responses
+•
+Designing multi-node LangGraph pipelines — a stateful conversation agent and a parallel
+analysis fan-out — rather than single prompt calls
+•
+Implementing role-based custom JWT auth and a secure invite-token flow
+•
+Designing a scoring system: rubrics, rolling averages, and level transitions that feel fair to users
+•
+Shipping production infrastructure: Docker, NGINX (with large-body audio handling), HTTPS,
+domains, CI/CD, SES
+•
+Using OpenTelemetry to find and fix real latency problems in a user-facing voice loop
+13. Evaluation Criteria
+Area
+Weight
+What Evaluators Look For
+Core product loop
+25%
+Invite → voice conversation → three-dimension feedback → level
+update → admin dashboard, all working live with real audio
+
+--- Page 11 ---
+
+PRD: Voice AI English Speaking Coach
+v1.0 | July 2026
+Page 11
+Area
+Weight
+What Evaluators Look For
+Agentic quality (ms2)
+20%
+LangGraph used meaningfully: stateful conversation graph +
+multi-node feedback pipeline; feedback is specific (exact words, exact
+corrections), not generic
+Architecture & code
+quality
+20%
+Clean ms1/ms2 boundaries, layered modules, typed schemas,
+scoring logic isolated and testable, no comment clutter
+Infrastructure &
+deployment
+20%
+Live on the domain with HTTPS; mic works in production; Docker,
+CI/CD, SES, NGINX audio config, and OTel traces all demonstrable
+Security & correctness
+10%
+Role-enforced JWT, single-use expiring invite tokens, hashed
+passwords, no secrets in repo, input validation on uploads
+Extras
+5%
+API docs, rate limiting, Google OAuth, TTS polish, tests
+14. Stretch Goals
+•
+Phoneme-level pronunciation scoring with listen-and-repeat drills for problem sounds
+•
+Real-time conversation over WebSockets with streaming STT (sub-second replies)
+•
+Hinglish detection — flag when the learner code-switches to Hindi and suggest the English
+phrasing
+•
+Batch error analytics for instructors ("top 5 errors across Comm-B7 this week")
+•
+Speaking tests: timed monologue assessments that certify a level, separate from practice
+•
+WhatsApp reminder integration alongside SES email
+15. Open Questions
+•
+STT choice: self-hosted faster-whisper (free, needs CPU/GPU headroom on EC2) vs a cloud
+STT API (accurate word-level confidence, per-minute cost)? Document the trade-off you pick.
+•
+How accurate can pronunciation feedback be from STT confidence alone, and when do you
+need a dedicated pronunciation-assessment model?
+•
+Should inline corrections interrupt the conversation, or does interrupting damage the confidence
+the product exists to build?
+•
+How should levels map to CEFR honestly without over-claiming ("Level 4 ≈ B2-ish" vs a certified
+score)?
+•
+Latency budget: what is the maximum acceptable delay between the learner finishing a sentence
+and the AI's reply — and which stage (upload, STT, LLM, TTS) gets optimised first?
+End of Document

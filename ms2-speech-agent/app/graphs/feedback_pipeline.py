@@ -62,31 +62,31 @@ def analyze_pronunciation(state: FeedbackState) -> FeedbackState:
         }
         return state
 
-    # Find low-confidence words from STT
-    low_confidence_words = [w for w in word_confidences if w.get("confidence", 1.0) < 0.85]
+    # Find low-confidence words from STT (threshold raised to 0.94 to capture subtle mistakes)
+    low_confidence_words = [w for w in word_confidences if w.get("confidence", 1.0) < 0.94]
 
     prompt = f"""Analyze the pronunciation of this English learner (Level {state.get('learner_level', 2)}/6).
 The learner is a Hindi-native speaker.
 
 Their spoken text: "{user_text}"
 
-Words with low STT confidence (likely mispronounced):
-{json.dumps(low_confidence_words[:10], indent=2)}
+Words with low STT confidence (likely mispronounced or forced-transcribed):
+{json.dumps(low_confidence_words[:12], indent=2)}
 
 Respond in this EXACT JSON format:
 {{
     "mispronounced_words": [
-        {{"word": "the correct word", "said_as": "how they likely said it", "count": 1, "tip": "how to fix it"}}
+        {{"word": "the correct word", "said_as": "how they likely said it phonetically or literally", "count": 1, "tip": "how to fix it"}}
     ],
-    "problem_phonemes": ["list common Hindi-speaker sound issues detected, e.g. v/w, th, r/l"],
+    "problem_phonemes": ["list common Hindi-speaker sound issues detected, e.g. v/w, th, r/l, retroflex consonants"],
     "pace_assessment": "brief assessment of speaking pace",
     "filler_sounds": ["any filler sounds detected"],
     "score": 45
 }}
 
 Score 0-100 where: 0-16=very poor, 17-33=poor, 34-50=fair, 51-67=good, 68-84=very good, 85-100=excellent.
-Be specific about exactly which words were mispronounced and how.
-Focus on common Hindi-speaker pronunciation patterns: v/w confusion, th→d/t, retroflex consonants.
+Be extremely specific about exactly which words were mispronounced and how.
+Note: If a word has low confidence (like 'bought'), check if they might have made a grammar mistake like 'buyed' or said a phonetically skewed word like 'camputerr' instead of 'computer'.
 Return ONLY valid JSON, no markdown."""
 
     try:

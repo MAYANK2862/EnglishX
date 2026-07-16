@@ -369,7 +369,30 @@ export default function PracticePage() {
                 {msg.role === 'user' ? user?.name?.charAt(0) || 'U' : '✦'}
               </div>
               <div className={styles.msgBubble}>
-                <p>{msg.content}</p>
+                {msg.role === 'user' && msg.word_confidences && msg.word_confidences.length > 0 ? (
+                  <p>
+                    {msg.content.split(/\s+/).map((word, idx) => {
+                      const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, "").toLowerCase();
+                      const match = msg.word_confidences.find(w => w.word.toLowerCase() === cleanWord);
+                      if (match && match.confidence < 0.93) {
+                        const percent = Math.round(match.confidence * 100);
+                        const isDanger = match.confidence < 0.75;
+                        return (
+                          <span
+                            key={idx}
+                            className={`${styles.flaggedWord} ${isDanger ? styles.pronounceDanger : styles.pronounceWarning}`}
+                            title={`Acoustic Confidence: ${percent}%`}
+                          >
+                            {word}{' '}
+                          </span>
+                        );
+                      }
+                      return <span key={idx}>{word} </span>;
+                    })}
+                  </p>
+                ) : (
+                  <p>{msg.content}</p>
+                )}
               </div>
             </div>
           ))}

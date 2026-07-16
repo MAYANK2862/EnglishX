@@ -460,3 +460,36 @@
   .feedbackScoreGrid { grid-template-columns: 1fr; }
   .message { max-width: 90%; }
 }
+
+.flaggedWord {
+  position: relative;
+  cursor: help;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+.pronounceWarning {
+  border-bottom: 2px dotted var(--warning-400);
+  color: var(--warning-300);
+}
+
+.pronounceWarning:hover {
+  color: var(--warning-400);
+  background: rgba(251, 191, 36, 0.08);
+  border-radius: var(--radius-xs);
+  padding: 0 2px;
+  margin: 0 -2px;
+}
+
+.pronounceDanger {
+  border-bottom: 2px dotted var(--danger-400);
+  color: var(--danger-300);
+}
+
+.pronounceDanger:hover {
+  color: var(--danger-400);
+  background: rgba(239, 68, 68, 0.08);
+  border-radius: var(--radius-xs);
+  padding: 0 2px;
+  margin: 0 -2px;
+}

@@ -85,11 +85,11 @@ def analyze_pronunciation(state: FeedbackState) -> FeedbackState:
         }
         return state
 
-    # Low-confidence words are likely mispronounced
+    # Low-confidence words are likely mispronounced (threshold raised to 0.94 to capture subtle mistakes)
     # Only include content words (type == "word"), not fillers
     low_confidence_words = [
         w for w in word_confidences
-        if w.get("confidence", 1.0) < 0.85 and w.get("type", "word") == "word"
+        if w.get("confidence", 1.0) < 0.94 and w.get("type", "word") == "word"
     ]
 
     # Accent clarity: language_confidence < 0.80 = heavy accent causing recognition issues
@@ -106,7 +106,7 @@ Learner profile:
 
 The learner said: "{user_text}"
 
-Words Deepgram struggled to recognize (likely mispronounced):
+Words Deepgram struggled to recognize (likely mispronounced or forced-transcribed):
 {json.dumps(low_confidence_words[:12], indent=2)}
 
 Filler words Deepgram detected (actual hesitations): {filler_words}
@@ -150,7 +150,8 @@ Respond in this EXACT JSON format (no markdown, no explanation):
 
 Score 0-100: 0-16=very poor, 17-33=poor, 34-50=fair, 51-67=good, 68-84=very good, 85-100=excellent.
 Consider: word clarity, phoneme accuracy, filler frequency, language_confidence score.
-Be specific — name the exact words mispronounced and the exact phoneme substitution."""
+Be specific — name the exact words mispronounced and the exact phoneme substitution.
+Note: If a word has low confidence (like 'bought'), check if they might have made a grammar mistake like 'buyed' or said a phonetically skewed word like 'camputerr' instead of 'computer'."""
 
     try:
         response = llm.invoke(prompt)
